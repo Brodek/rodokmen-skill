@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Výzkumný deník (data/research_log.md) – přidání řádku se správným číslem a sloupci, kontrola tabulky.
 
-Proč: deník je na webu jedna markdown tabulka. Prázdný řádek ji ukončí (web pak ukazoval jen do #367),
+Proč: deník je na webu jedna markdown tabulka. Prázdný řádek ji ukončí (web pak ukáže jen řádky nad ním),
 chybějící sloupce rozhodí zobrazení a server sloučí větev jen tehdy, když nový řádek má číslo, které v `main` ještě není.
 
 Použití (z kořene projektu):
@@ -27,9 +27,10 @@ for _s in (sys.stdout, sys.stderr):
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG = os.path.join(ROOT, "data", "research_log.md")
 SLOUPCE = ["#", "datum", "zdroj", "rozsah", "hledáno", "výsledek", "citace"]
-DENIK_OD = 384   # starší řádky mají často méně sloupců; měnit je smí jen účet brodek, kontrola je proto přeskakuje
+DENIK_OD = 1   # projekt se staršími řádky jiného tvaru může nastavit číslo, od kterého se sloupce kontrolují
 RADEK = re.compile(r"^\| (\d+) \|")
 SEP = re.compile(r"(?<!\\)\|")
+ODDELOVAC = re.compile(r"^\|(\s*:?-+:?\s*\|)+\s*$")   # |---|---| pod hlavičkou (prázdný deník ze šablony)
 
 
 def bunky(radek):
@@ -75,7 +76,8 @@ def pridej(udaje):
     radek = "| " + " | ".join([str(cislo), datum] + [bunka(udaje.get(k)) for k in ("zdroj", "rozsah", "hledano", "vysledek", "citace")]) + " |"
     # konec souboru: smazat prázdné řádky za tabulkou, ať nový řádek tabulku neukončí
     zbytek = text.rstrip("\r\n \t")
-    if not RADEK.match(zbytek.splitlines()[-1]):
+    posledni = zbytek.splitlines()[-1] if zbytek else ""
+    if not (RADEK.match(posledni) or ODDELOVAC.match(posledni)):
         sys.exit("Deník nekončí řádkem tabulky – nový řádek by nebyl v tabulce. Oprav konec data/research_log.md ručně.")
     novy = zbytek + eol + radek + eol
     tmp = LOG + ".tmp"

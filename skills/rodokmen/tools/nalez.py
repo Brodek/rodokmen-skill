@@ -164,11 +164,14 @@ def obrazky(v):
     return os.path.join(ROOT, "pracovni", f"ramecek_{klic}.jpg")
 
 
+PREPSAT = []   # [„--prepsat“], když nález nahrazuje existující zápis (předá se do zapis.py)
+
+
 def zapis_json(soubor, klic, obj):
     p = os.path.join(PRAC, f"{klic}.{soubor}.json")
     with open(p, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False)
-    nastroj("zapis.py", soubor, klic, p)
+    nastroj("zapis.py", soubor, klic, p, *PREPSAT)
 
 
 def data(v):
@@ -205,6 +208,7 @@ def data(v):
 def main():
     a = sys.argv[1:]
     prepsat = "--prepsat" in a
+    PREPSAT[:] = ["--prepsat"] if prepsat else []
     a = [x for x in a if x != "--prepsat"]
     if len(a) != 2 or a[0] not in ("nahled", "zapis"):
         sys.exit(__doc__)

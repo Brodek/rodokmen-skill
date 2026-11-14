@@ -3,7 +3,7 @@
 
 Proč: celé snímky z archivů (mezipaměť, `pracovni/`) jsou jen na jednom počítači a v gitu nejsou. Do gitu jde jen
 tento malý soubor `data/snimky.tsv` (jeden řádek = jeden prohlédnutý snímek nebo úsek snímků), takže kdokoli
-(jiná AI, vyšší model, Ladislav) ví, KDE co bylo čteno, a může si snímek znovu stáhnout (`tools/aron_img.py <kniha> <sn>`)
+(jiná AI, vyšší model, uživatel) ví, KDE co bylo čteno, a může si snímek znovu stáhnout (`tools/aron_img.py <kniha> <sn>`)
 nebo otevřít přes odkaz. Soubor se slučuje po řádcích (`.gitattributes`: merge=union), víc AI může přidávat zároveň.
 
 Použití (z kořene projektu):

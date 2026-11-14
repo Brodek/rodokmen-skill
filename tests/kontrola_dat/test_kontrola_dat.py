@@ -30,9 +30,9 @@ def ma(warn, text, ocekavam=True):
 P = {
     4: dict(n="Jan Novák", y="1840–1900", st="doc", f=["* 3. 3. 1841", "† 1. 1. 1905", "× 1. 2. 1865 Marie (jako vdovec)"],
             r=["o_1865"], note="V matrice neověřeno."),
-    5: dict(n="Marie Malá", y="1845–1930", st="doc", f=["* 1845 (strom MH)", "† 1930 (strom Hachová)"], r=["n_1845"]),
+    5: dict(n="Marie Malá", y="1845–1930", st="doc", f=["* 1845 (strom MH)", "† 1930 (strom Novotná)"], r=["n_1845"]),
     6: dict(n="Petr Kos", y="", st="doc", f=["* asi 1799 (24 let při sňatku)"], r=["n_1845"]),
-    7: dict(n="Anna Kosová", y="1850–1930 (?)", st="doc", f=["† 1930 (strom Hachová)"], r=["n_1845"]),
+    7: dict(n="Anna Kosová", y="1850–1930 (?)", st="doc", f=["† 1930 (strom Novotná)"], r=["n_1845"]),
     2: dict(n="Josef Novák", y="1866–1940", st="doc", f=["* 1866", "× 1890 Anna Bílá (vdova)"], r=["o_1890"]),
 }
 ZAZ = [dict(klic="o_1865", druh="O", datum="1. 2. 1865", nazev="Sňatek", shrnuti="…"),
@@ -71,6 +71,22 @@ try:
     VYSLEDKY.append((not e, f"denik: kontrola čistá ({e})"))
     e, _ = denik.kontrola(text.replace("| 501 |", "\n| 501 |").replace("| e |", "| e | f |"), od=500)
     VYSLEDKY.append((any("prázdný řádek" in x for x in e) and any("sloupců" in x for x in e), "denik: hlásí prázdný řádek a sloupce"))
+finally:
+    shutil.rmtree(tmp)
+
+# denik.py na prázdném deníku ze šablony (končí oddělovacím řádkem |---|) – první řádek nového projektu
+SABLONA = os.path.join(ROOT, "skills", "rodokmen", "template", "data", "research_log.md")
+tmp = tempfile.mkdtemp()
+try:
+    log = os.path.join(tmp, "research_log.md")
+    shutil.copyfile(SABLONA, log)
+    denik.LOG = log
+    n = denik.pridej(dict(zdroj="z", rozsah="r", hledano="h", vysledek="v"))
+    text = open(log, encoding="utf-8").read()
+    VYSLEDKY.append((n == 1, "denik: prázdný deník ze šablony – první řádek má číslo 1"))
+    VYSLEDKY.append((text.rstrip().splitlines()[-1].startswith("| 1 |"), "denik: první řádek přidán za hlavičku tabulky"))
+    e, _ = denik.kontrola(text)
+    VYSLEDKY.append((not e, f"denik: kontrola prázdného deníku s jedním řádkem čistá ({e})"))
 finally:
     shutil.rmtree(tmp)
 
